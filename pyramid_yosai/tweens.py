@@ -18,8 +18,7 @@ def yosai_subject_tween_factory(handler, registry):
         web_registry = PyramidWebRegistry(request)
 
         with yosai(web_registry):
-            subject = yosai.subject
-            request.subject = subject  # TBD
+            request.subject = yosai.subject  # TBD
             response = handler(request)
 
         return response

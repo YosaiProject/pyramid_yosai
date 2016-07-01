@@ -3,20 +3,9 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.txt')) as f:
-    README = f.read()
-with open(os.path.join(here, 'CHANGES.txt')) as f:
-    CHANGES = f.read()
 
 requires = [
     'pyramid',
-    'pyramid_jinja2',
-    'pyramid_debugtoolbar',
-    'pyramid_tm',
-    'SQLAlchemy',
-    'transaction',
-    'zope.sqlalchemy',
-    'waitress',
     ]
 
 tests_require = [
@@ -28,7 +17,7 @@ tests_require = [
 setup(name='pyramid_yosai',
       version='0.0',
       description='pyramid_yosai',
-      long_description=README + '\n\n' + CHANGES,
+      long_description='Integration of the Yosai Security Framework with the Pyramid Web Framework',
       classifiers=[
           "Programming Language :: Python",
           "Framework :: Pyramid",
@@ -38,7 +27,7 @@ setup(name='pyramid_yosai',
       author='',
       author_email='',
       url='',
-      keywords='web wsgi bfg pylons pyramid',
+      keywords='web wsgi pyramid yosai',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
@@ -46,10 +35,4 @@ setup(name='pyramid_yosai',
           'testing': tests_require,
       },
       install_requires=requires,
-      entry_points="""\
-      [paste.app_factory]
-      main = pyramid_yosai:main
-      [console_scripts]
-      initialize_pyramid_yosai_db = pyramid_yosai.scripts.initializedb:main
-      """,
       )
