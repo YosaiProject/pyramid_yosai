@@ -1,5 +1,3 @@
-import functools
-
 from pyramid.session import (
     signed_deserialize,
     signed_serialize,
@@ -13,63 +11,10 @@ from yosai.web import (
 class PyramidWebRegistry(web_abcs.WebRegistry):
 
     def __init__(self, request, secret):
-        self.request = request
-        self.secret = secret
-        self.cookies = {'set_cookie': {}, 'delete_cookie': set()}
+        super().__init__(request, secret)
+
+    def register_response_callback(self):
         self.request.add_response_callback(self.webregistry_callback)
-        self._session_creation_enabled = True
-        self.set_cookie_attributes = {}  # TBD
-
-    @property
-    def remember_me(self):
-        return self._get_cookie('remember_me', self.secret)
-
-    @remember_me.setter
-    def remember_me(self, rememberme):
-        cookie = {'value': rememberme}
-        self.cookies['set_cookie']['remember_me'] = cookie
-
-    @remember_me.deleter
-    def remember_me(self):
-        self.cookies['delete_cookie'].add('remember_me')
-
-    @property
-    def session_id(self):
-        return self._get_cookie('session_id', self.secret)
-
-    @session_id.setter
-    def session_id(self, session_id):
-        cookie = {'value': session_id}
-        self.cookies['set_cookie']['session_id'] = cookie
-
-    @session_id.deleter
-    def session_id(self):
-        self.cookies['delete_cookie'].add('session_id')
-
-    @property
-    def remote_host(self):
-        return self.request.client_addr
-
-    @property
-    def session_creation_enabled(self):
-        return self._session_creation_enabled
-
-    @session_creation_enabled.setter
-    def session_creation_enabled(self, session_creation_enabled):
-        self._session_creation_enabled = session_creation_enabled
-
-    @session_creation_enabled.deleter
-    def session_creation_enabled(self):
-        self._session_creation_enabled = None
-
-    def webregistry_callback(self, request, response):
-        while self.cookies['set_cookie']:
-            key, value = self.cookies['set_cookie'].popitem()
-            self._set_cookie(response, key, **value)
-
-        while self.cookies['delete_cookie']:
-            key = self.cookies['delete_cookie'].pop()
-            self._delete_cookie(response, key)
 
     def _get_cookie(self, cookie_name, secret):
         cookie = self.request.cookies.get(cookie_name)
