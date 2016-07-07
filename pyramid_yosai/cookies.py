@@ -18,7 +18,7 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
         self.cookies = {'set_cookie': {}, 'delete_cookie': set()}
         self.request.add_response_callback(self.webregistry_callback)
         self._session_creation_enabled = True
-        self.set_cookie_attributes = {} # TBD
+        self.set_cookie_attributes = {}  # TBD
 
     @property
     def remember_me(self):
@@ -27,7 +27,6 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
     @remember_me.setter
     def remember_me(self, rememberme):
         cookie = {'value': rememberme}
-        cookie.update(self.set_cookie_attributes)
         self.cookies['set_cookie']['remember_me'] = cookie
 
     @remember_me.deleter
@@ -41,7 +40,6 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
     @session_id.setter
     def session_id(self, session_id):
         cookie = {'value': session_id}
-        cookie.update(self.set_cookie_attributes)
         self.cookies['set_cookie']['session_id'] = cookie
 
     @session_id.deleter
@@ -81,45 +79,22 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
         except (ValueError, AttributeError):
             return None
 
-    def _set_cookie(self, response, cookie_name, cookie_val, cookie_max_age,
-                    cookie_path, cookie_domain, cookie_secure, cookie_httponly,
-                    secret):
-        cookieval = signed_serialize(cookie_val, secret)
+    def _set_cookie(self, response, cookie_name, cookie_val):
+
+        cookieval = signed_serialize(cookie_val, self.secret)
+
         response.set_cookie(
             cookie_name,
             value=cookieval,
-            max_age=cookie_max_age,
-            path=cookie_path,
-            domain=cookie_domain,
-            secure=cookie_secure,
-            httponly=cookie_httponly,
-            )
+            max_age=self.set_cookie_attributes.get('cookie_max_age', None),
+            path=self.set_cookie_attributes.get('cookie_path', None),
+            domain=self.set_cookie_attributes.get('cookie_domain', None),
+            secure=self.set_cookie_attributes.get('cookie_secure', None),
+            httponly=self.set_cookie_attributes.get('cookie_httponly', None))
 
+    def _delete_cookie(self, response, cookie_name):
 
-    def _delete_cookie(response, cookie_name, cookie_path, cookie_domain):
-        response.delete_cookie(cookie_name, path=cookie_path, domain=cookie_domain)
-
-
-    def _cookie_callback(
-        request,
-        response,
-        session_cookie_was_valid,
-        cookie_on_exception,
-        set_cookie,
-        delete_cookie,
-        ):
-        """Response callback to set the appropriate Set-Cookie header."""
-        session = request.session
-        if session._invalidated:
-            if session_cookie_was_valid:
-                delete_cookie(response=response)
-            return
-        if session.new:
-            if cookie_on_exception is True or request.exception is None:
-                set_cookie(request=request, response=response)
-            elif session_cookie_was_valid:
-                # We don't set a cookie for the new session here (as
-                # cookie_on_exception is False and an exception was raised), but we
-                # still need to delete the existing cookie for the session that the
-                # request started with (as the session has now been invalidated).
-                delete_cookie(response=response)
+        response.delete_cookie(
+            cookie_name,
+            path=self.set_cookie_attributes.get('cookie_path', None),
+            domain=self.set_cookie_attributes.get('cookie_domain', None))
