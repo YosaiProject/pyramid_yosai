@@ -1,13 +1,14 @@
 from pyramid.tweens import EXCVIEW
 
 
-def register_yosai(config, yosai):
+def set_yosai(config, yosai):
 
     def callback():
         config.registry['yosai'] = yosai
 
     discriminator = ('register_yosai',)
     config.action(discriminator, callable=callback)
+
 
 def _parse_settings(settings):
     """
@@ -22,6 +23,7 @@ def _parse_settings(settings):
     yosai.realms = {class: store}
     """
     pass
+
 
 def create_yosai_from_settings(settings):
     """
@@ -42,9 +44,9 @@ def includeme(config):  # pragma: no cover
     :type config: :class:`pyramid.config.Configurator`
     """
 
-    config.add_directive('register_yosai', register_yosai)
+    config.add_directive('register_yosai', set_yosai)
 
-    config.add_tween('pyramid_yosai.tweens.yosai_subject_tween_factory',
+    config.add_tween('pyramid_yosai.tweens.pyramid_yosai_tween_factory',
                      over=EXCVIEW)
 
     config.add_request_method(lambda request: request.subject.get_session(),
