@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-requires = ['pyramid', 'yosai']
+requires = ['pyramid', 'yosai', 'marshmallow']
 
 setup(name='pyramid_yosai',
       version='0.0',

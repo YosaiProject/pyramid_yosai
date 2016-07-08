@@ -13,12 +13,12 @@ def pyramid_yosai_tween_factory(handler, registry):
     yosai = registry.get('yosai')
     if yosai is None:
         msg = ('You cannot register the Yosai subject tween without first '
-               'registering a yosai instance with Pyramid by calling "config.set_yosai"')
+               'registering a yosai instance with Pyramid."')
         raise ConfigurationError(msg)
 
     def tween(request):
         web_registry = PyramidWebRegistry(request)
-        subject = yosai.identify_subject(web_registry)
+        subject = yosai.get_subject(web_registry)
 
         with WebYosai.context(subject):
             response = handler(request)

@@ -1,7 +1,7 @@
-# from pyramid.session import (
-#     signed_deserialize,
-#     signed_serialize,
-# )
+from pyramid.session import (
+    signed_deserialize,
+    signed_serialize,
+)
 
 from yosai.web import (
     web_abcs
@@ -20,13 +20,13 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
         cookie = self.request.cookies.get(cookie_name)
 
         try:
-            return cookie  # signed_deserialize(cookie, secret)
+            return signed_deserialize(cookie, secret)
         except (ValueError, AttributeError):
             return None
 
     def _set_cookie(self, response, cookie_name, cookie_val):
 
-        cookieval = cookie_val  # signed_serialize(cookie_val, self.secret)
+        cookieval = signed_serialize(cookie_val, self.secret)
 
         response.set_cookie(
             cookie_name,

@@ -1,16 +1,28 @@
 from pyramid.tweens import EXCVIEW
 
+from yosai.core import AccountStoreRealm
+from yosai.web import WebSecurityManager, WebYosai
+from yosai_dpcache.cache import DPCacheHandler
+from yosai_alchemystore import AlchemyAccountStore
+
+from marshmallow import Schema
+
 
 def set_yosai(config, yosai):
+    """
+    Use config.set_yosai when you want to manually set the Yosai instance in
+    Pyramid's registry rather than initialize Yosai from INI config, as
+    performed by _create_yosai_from_settings.
+    """
 
     def callback():
         config.registry['yosai'] = yosai
 
-    discriminator = ('register_yosai',)
+    discriminator = ('set_yosai',)
     config.action(discriminator, callable=callback)
 
 
-def _parse_settings(settings):
+def _parse_security_manager_settings(settings):
     """
     Currently, Yosai can be configured from settings specified within pyramid
     settings INI file in conjunction with settings files specific to Yosai,
@@ -22,10 +34,20 @@ def _parse_settings(settings):
     yosai.accountstore
     yosai.realms = {class: store}
     """
-    pass
+
+    # this is a temporary, hard-coded solution until INI parsing is finished
+
+    class AttributesSchema(Schema):
+        pass
+
+    realm = AccountStoreRealm(account_store=AlchemyAccountStore())
+
+    return WebSecurityManager(realms=(realm,),
+                              cache_handler=DPCacheHandler(),
+                              session_attributes_schema=AttributesSchema)
 
 
-def create_yosai_from_settings(settings):
+def yosai_from_settings(settings):
     """
     Convenience method to construct a ``Yosai`` instance from Paste config
     settings. Only settings prefixed with "yosai." are inspected
@@ -35,8 +57,11 @@ def create_yosai_from_settings(settings):
     :param settings: A dict of Pyramid application settings
     :returns: a Yosai instance
     """
-    security_manager = _parse_settings(settings)
-    pass
+    try:
+        security_manager = _parse_security_manager_settings(settings)
+        return WebYosai(security_manager=security_manager)
+    except AttributeError:
+        return None
 
 
 def includeme(config):  # pragma: no cover
@@ -44,7 +69,7 @@ def includeme(config):  # pragma: no cover
     :type config: :class:`pyramid.config.Configurator`
     """
 
-    config.add_directive('register_yosai', set_yosai)
+    config.add_directive('set_yosai', set_yosai)
 
     config.add_tween('pyramid_yosai.tweens.pyramid_yosai_tween_factory',
                      over=EXCVIEW)
@@ -52,3 +77,7 @@ def includeme(config):  # pragma: no cover
     config.add_request_method(lambda request: request.subject.get_session(),
                               'session',
                               reify=False)
+
+    yosai = yosai_from_settings(config.registry.settings)
+    if yosai:
+        config.registry['yosai'] = yosai
