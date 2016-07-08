@@ -1,11 +1,15 @@
 from pyramid.tweens import EXCVIEW
 
-from yosai.core import AccountStoreRealm
+from yosai.core import AccountStoreRealm, get_current_subject
 from yosai.web import WebSecurityManager, WebYosai
 from yosai_dpcache.cache import DPCacheHandler
 from yosai_alchemystore import AlchemyAccountStore
 
 from marshmallow import Schema
+
+from forms import (
+    YosaiForm,
+)
 
 
 def set_yosai(config, yosai):
@@ -74,7 +78,11 @@ def includeme(config):  # pragma: no cover
     config.add_tween('pyramid_yosai.tweens.pyramid_yosai_tween_factory',
                      over=EXCVIEW)
 
-    config.add_request_method(lambda request: request.subject.get_session(),
+    config.add_request_method(lambda request: get_current_subject(),
+                              'subject',
+                              reify=False)
+
+    config.add_request_method(lambda request: get_current_subject().get_session(),
                               'session',
                               reify=False)
 
