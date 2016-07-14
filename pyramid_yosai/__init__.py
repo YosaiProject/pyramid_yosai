@@ -1,14 +1,14 @@
 from pyramid.tweens import EXCVIEW
 
-from yosai.core import AccountStoreRealm, get_current_subject
+from yosai.core import AccountStoreRealm
 from yosai.web import WebSecurityManager, WebYosai
 from yosai_dpcache.cache import DPCacheHandler
 from yosai_alchemystore import AlchemyAccountStore
 
-from marshmallow import Schema
+from marshmallow import Schema, fields
 
-from forms import (
-    YosaiForm,
+from .forms import (
+    LoginForm,
 )
 
 
@@ -42,7 +42,7 @@ def _parse_security_manager_settings(settings):
     # this is a temporary, hard-coded solution until INI parsing is finished
 
     class AttributesSchema(Schema):
-        pass
+        test = fields.String()
 
     realm = AccountStoreRealm(account_store=AlchemyAccountStore())
 
@@ -63,7 +63,7 @@ def yosai_from_settings(settings):
     """
     try:
         security_manager = _parse_security_manager_settings(settings)
-        return WebYosai(security_manager=security_manager)
+        return WebYosai(security_manager)
     except AttributeError:
         return None
 
@@ -78,13 +78,9 @@ def includeme(config):  # pragma: no cover
     config.add_tween('pyramid_yosai.tweens.pyramid_yosai_tween_factory',
                      over=EXCVIEW)
 
-    config.add_request_method(lambda request: get_current_subject(),
-                              'subject',
-                              reify=False)
-
-    config.add_request_method(lambda request: get_current_subject().get_session(),
-                              'session',
-                              reify=False)
+    # config.add_request_method(lambda request: Yosai.get_current_subject().get_session(),
+    #                           'session',
+    #                          reify=False)
 
     yosai = yosai_from_settings(config.registry.settings)
     if yosai:

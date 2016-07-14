@@ -1,8 +1,8 @@
-from yosai.core import get_current_subject
 import wtforms
+"""
+from yosai.core import Yosai
 from wtforms.ext.csrf.form import SecureForm
 from pyramid.exceptions import BadCSRFToken
-
 
 class YosaiForm(SecureForm):
 
@@ -16,20 +16,20 @@ class YosaiForm(SecureForm):
 
     def generate_csrf_token(self, csrf_context):
         if not csrf_context:
-            subject = get_current_subject()
+            subject = Yosai.get_current_subject()
             return subject.get_session().get_csrf_token()
         return csrf_context.session.get_csrf_token()
 
     def validate_csrf_token(self, field):
         if field.data != field.current_token:
             raise BadCSRFToken()
-
+"""
 
 def strip_filter(value):
     return value.strip() if value else None
 
 
-class LoginForm(YosaiForm):
+class LoginForm(wtforms.Form):   # update to YosaiForm when CSRF support is ready
     username = wtforms.StringField(
         "Username",
         filters=[strip_filter],
@@ -42,7 +42,4 @@ class LoginForm(YosaiForm):
         validators=[
             wtforms.validators.InputRequired(),
             wtforms.validators.Length(min=3),
-            wtforms.validators.EqualTo('confirm', message='Passwords must match')
         ])
-
-    confirm = wtforms.PasswordField('Repeat password')

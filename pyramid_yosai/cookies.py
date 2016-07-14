@@ -10,7 +10,7 @@ from yosai.web import (
 
 class PyramidWebRegistry(web_abcs.WebRegistry):
 
-    def __init__(self, request, secret):
+    def __init__(self, request, secret='changeme'):
         super().__init__(request, secret)
 
     def register_response_callback(self):
