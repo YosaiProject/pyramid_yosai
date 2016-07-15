@@ -19,7 +19,7 @@ def pyramid_yosai_tween_factory(handler, registry):
     def tween(request):
         web_registry = PyramidWebRegistry(request)
         subject = yosai.get_subject(web_registry)
-        with WebYosai.context(subject):
+        with WebYosai.context(yosai, subject):
             response = handler(request)
         return response
 
