@@ -1,4 +1,5 @@
 import wtforms
+
 """
 from yosai.core import Yosai
 from wtforms.ext.csrf.form import SecureForm
@@ -25,11 +26,12 @@ class YosaiForm(SecureForm):
             raise BadCSRFToken()
 """
 
+
 def strip_filter(value):
     return value.strip() if value else None
 
 
-class LoginForm(wtforms.Form):   # update to YosaiForm when CSRF support is ready
+class LoginForm(wtforms.Form):   # update to YosaiForm when CSRF support ready
     username = wtforms.StringField(
         "Username",
         filters=[strip_filter],

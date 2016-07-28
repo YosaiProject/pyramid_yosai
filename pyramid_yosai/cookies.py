@@ -20,7 +20,8 @@ class PyramidWebRegistry(web_abcs.WebRegistry):
         cookie = self.request.cookies.get(cookie_name)
 
         try:
-            return signed_deserialize(cookie, secret)
+            myval = signed_deserialize(cookie, secret)
+            return myval
         except (ValueError, AttributeError):
             return None
 

@@ -7,9 +7,7 @@ from yosai_alchemystore import AlchemyAccountStore
 
 from marshmallow import Schema, fields
 
-from .forms import (
-    LoginForm,
-)
+from .forms import LoginForm  # required by 3rd party
 
 
 def set_yosai(config, yosai):

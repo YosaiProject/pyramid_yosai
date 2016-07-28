@@ -2,7 +2,7 @@
 from pyramid.exceptions import ConfigurationError
 from yosai.web import WebYosai
 from .cookies import PyramidWebRegistry
-import pdb
+
 
 def pyramid_yosai_tween_factory(handler, registry):
     """
@@ -17,9 +17,10 @@ def pyramid_yosai_tween_factory(handler, registry):
         raise ConfigurationError(msg)
 
     def tween(request):
+
         web_registry = PyramidWebRegistry(request)
-        subject = yosai.get_subject(web_registry)
-        with WebYosai.context(yosai, subject):
+
+        with WebYosai.context(yosai, web_registry):
             response = handler(request)
         return response
 
