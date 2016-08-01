@@ -7,11 +7,26 @@ from yosai.web import (
     web_abcs
 )
 
+from pyramid.httpexceptions import (
+    HTTPUnauthorized,
+    HTTPForbidden,
+)
+
 
 class PyramidWebRegistry(web_abcs.WebRegistry):
 
     def __init__(self, request, secret='changeme'):
         super().__init__(request, secret)
+
+    @property
+    def resource_params(self):
+        return self.request.matchdict
+
+    def raise_unauthorized(self, msg=None):
+        raise HTTPUnauthorized(msg)  # HTTP Error Code 401
+
+    def raise_forbidden(self, msg=None):
+        raise HTTPForbidden(msg)  # HTTP Error Code 403
 
     def register_response_callback(self):
         self.request.add_response_callback(self.webregistry_callback)

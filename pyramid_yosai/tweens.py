@@ -1,7 +1,7 @@
 
 from pyramid.exceptions import ConfigurationError
 from yosai.web import WebYosai
-from .cookies import PyramidWebRegistry
+from .webregistry import PyramidWebRegistry
 
 
 def pyramid_yosai_tween_factory(handler, registry):
