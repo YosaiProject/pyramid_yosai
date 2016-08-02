@@ -7,7 +7,7 @@ from yosai_alchemystore import AlchemyAccountStore
 
 from marshmallow import Schema, fields
 
-from .forms import LoginForm  # required by 3rd party
+from .forms import YosaiForm, LoginForm  # required by 3rd party
 
 
 def set_yosai(config, yosai):
@@ -75,10 +75,6 @@ def includeme(config):  # pragma: no cover
 
     config.add_tween('pyramid_yosai.tweens.pyramid_yosai_tween_factory',
                      over=EXCVIEW)
-
-    # config.add_request_method(lambda request: Yosai.get_current_subject().get_session(),
-    #                           'session',
-    #                          reify=False)
 
     yosai = yosai_from_settings(config.registry.settings)
     if yosai:
