@@ -1,4 +1,5 @@
 from pyramid.tweens import EXCVIEW
+from pyramid.path import DottedNameResolver
 
 from yosai.core import AccountStoreRealm
 from yosai.web import WebSecurityManager, WebYosai
@@ -51,19 +52,21 @@ def _parse_security_manager_settings(settings):
 
 def yosai_from_settings(settings):
     """
-    Convenience method to construct a ``Yosai`` instance from Paste config
-    settings. Only settings prefixed with "yosai." are inspected
-    and, if needed, coerced to their appropriate types (for example, casting
-    the ``timeout`` value as an `int`).
+    Convenience method to construct a ``Yosai`` instance, referencing paste-deploy
+    INI settings to obtain the envvar or filepath to yosai settings.
 
-    :param settings: A dict of Pyramid application settings
+    :raises: KeyError when neither yosai env_var nor file_path are defined
     :returns: a Yosai instance
     """
-    try:
-        security_manager = _parse_security_manager_settings(settings)
-        return WebYosai(security_manager)
-    except AttributeError:
-        return None
+    env_var = settings['yosai.settings_filepath_envvar']
+    if env_var:
+        return WebYosai(env_var=env_var)
+
+    file_path = settings['yosai.settings_filepath']
+    if file_path:
+        return WebYosai(file_path=file_path)
+
+    raise ValueError('pyramid_yosai must have either an env_var or file_path')
 
 
 def includeme(config):  # pragma: no cover
