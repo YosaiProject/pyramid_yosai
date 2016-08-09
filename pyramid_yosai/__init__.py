@@ -1,14 +1,6 @@
 from pyramid.tweens import EXCVIEW
 from pyramid.exceptions import ConfigurationError
-from pyramid.path import DottedNameResolver
-
-from yosai.core import AccountStoreRealm
-from yosai.web import WebSecurityManager, WebYosai
-from yosai_dpcache.cache import DPCacheHandler
-from yosai_alchemystore import AlchemyAccountStore
-
-from marshmallow import Schema, fields
-
+from yosai.web import WebYosai
 from .forms import YosaiForm, LoginForm  # required by 3rd party
 
 

@@ -41,3 +41,5 @@ class LoginForm(YosaiForm):
             wtforms.validators.InputRequired(),
             wtforms.validators.Length(min=3),
         ])
+
+    remember_me = wtforms.BooleanField('Remember Me', default=False)
