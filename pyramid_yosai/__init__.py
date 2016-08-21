@@ -2,6 +2,7 @@ from pyramid.tweens import EXCVIEW
 from pyramid.exceptions import ConfigurationError
 from yosai.web import WebYosai
 from .forms import YosaiForm, LoginForm  # required by 3rd party
+from .webregistry import PyramidWebRegistry  # required by 3rd party
 
 
 def set_yosai(config, yosai):
