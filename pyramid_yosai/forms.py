@@ -36,7 +36,6 @@ class LoginForm(YosaiForm):
 
     password = wtforms.PasswordField(
         "Password",
-        filters=[strip_filter],
         validators=[
             wtforms.validators.InputRequired(),
             wtforms.validators.Length(min=3),
